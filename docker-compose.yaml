@@ -1,0 +1,29 @@
+name: "agent-wireguard"
+
+services:
+  wireguard:
+    container_name: wireguard
+    image: lscr.io/linuxserver/wireguard:latest
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE #optional
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - SERVERURL=wireguard.domain.com #optional
+      - SERVERPORT=${SERVER_PORT} #optional
+      - PEERS=1 #optional
+      - PEERDNS=auto #optional
+      - INTERNAL_SUBNET=10.13.13.0 #optional
+      - ALLOWEDIPS=0.0.0.0/0
+      - PERSISTENTKEEPALIVE_PEERS=20
+      - LOG_CONFS=true
+    volumes:
+      - /path/to/wireguard/config:/config
+      - /lib/modules:/lib/modules #optional
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}/udp
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: always
