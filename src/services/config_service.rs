@@ -1,6 +1,6 @@
 use crate::{enums::errors::internal::InternalError, scripts};
 use std::net::Ipv4Addr;
-use tracing::{error, info};
+use tracing::error;
 
 pub async fn add_config() -> Result<String, InternalError> {
     let ip: Ipv4Addr = get_available_ip().await?;
@@ -19,8 +19,10 @@ pub async fn get_used_ips() -> Result<Vec<Ipv4Addr>, InternalError> {
     })?;
     let used_ips: Vec<Ipv4Addr> = used_ips_raw
         .lines()
-        .map(|ip| {
-            let ip = ip.trim_end_matches("/32");
+        .map(|line| {
+            let mut parts = line.split_whitespace();
+            parts.next().unwrap();
+            let ip = parts.next().unwrap().trim_end_matches("/32");
             ip.parse().unwrap()
         })
         .collect();

@@ -17,5 +17,4 @@ FROM linuxserver/wireguard
 COPY --from=builder /agent-wireguard/target/x86_64-unknown-linux-musl/release/agent-wireguard /agent-wireguard
 ENTRYPOINT ["/agent-wireguard"]
 
-EXPOSE 7070
-EXPOSE 51820/udp
+EXPOSE $MASTER_BACKEND_PORT

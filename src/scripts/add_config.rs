@@ -1,30 +1,45 @@
 use crate::enums::errors::internal::{to_internal, InternalError};
 use std::{
-    env,
-    fs::{self, File},
+    fs::File,
     io::Write,
     net::Ipv4Addr,
-    process::Command,
+    process::{Command, Stdio},
 };
 
 pub fn add_config(ip: Ipv4Addr) -> Result<String, InternalError> {
-    let temp_dir: &str = "temp";
-    fs::create_dir_all(temp_dir).map_err(to_internal)?;
-    env::set_current_dir(temp_dir).map_err(to_internal)?;
-
-    Command::new("wg")
+    let private_key_output = Command::new("wg")
         .arg("genkey")
-        .arg("|")
-        .arg("tee")
-        .arg("privatekey")
-        .arg("|")
-        .arg("wg")
-        .arg("pubkey")
         .output()
         .map_err(to_internal)?;
 
-    let private_key: String = fs::read_to_string("privatekey").map_err(to_internal)?;
-    let public_key: String = fs::read_to_string("publickey").map_err(to_internal)?;
+    if !private_key_output.status.success() {
+        return Err(InternalError::InternalError);
+    }
+
+    let private_key =
+        String::from_utf8(private_key_output.stdout).map_err(|e| InternalError::InternalError)?;
+
+    let public_key_output = Command::new("wg")
+        .arg("pubkey")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .and_then(|mut child| {
+            child
+                .stdin
+                .as_mut()
+                .unwrap()
+                .write_all(private_key.as_bytes())?;
+            child.wait_with_output()
+        })
+        .map_err(to_internal)?;
+
+    if !public_key_output.status.success() {
+        return Err(InternalError::InternalError);
+    }
+
+    let public_key =
+        String::from_utf8(public_key_output.stdout).map_err(|e| InternalError::InternalError)?;
 
     Command::new("wg")
         .arg("set")
@@ -33,7 +48,7 @@ pub fn add_config(ip: Ipv4Addr) -> Result<String, InternalError> {
         .arg(public_key.trim())
         .arg("allowed-ips")
         .arg(format!("{}/32", ip))
-        .output()
+        .spawn()
         .map_err(to_internal)?;
 
     Command::new("ip")
@@ -43,7 +58,7 @@ pub fn add_config(ip: Ipv4Addr) -> Result<String, InternalError> {
         .arg(format!("{}/32", ip))
         .arg("dev")
         .arg("wg0")
-        .output()
+        .spawn()
         .map_err(to_internal)?;
 
     let mut wg0_conf: File = File::options()
@@ -54,9 +69,6 @@ pub fn add_config(ip: Ipv4Addr) -> Result<String, InternalError> {
     writeln!(wg0_conf, "[Peer]").map_err(to_internal)?;
     writeln!(wg0_conf, "PublicKey = {}", public_key.trim()).map_err(to_internal)?;
     writeln!(wg0_conf, "AllowedIPs = {}/32", ip).map_err(to_internal)?;
-
-    fs::remove_dir_all(temp_dir).map_err(to_internal)?;
-    env::set_current_dir("..").map_err(to_internal)?;
 
     Ok(private_key.trim().to_string())
 }

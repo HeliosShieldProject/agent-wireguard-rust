@@ -9,7 +9,6 @@ services:
     restart: "always"
     privileged: true
     environment:
-      - "SERVER_PORT=51820"
+      - "SERVER_PORT=7070"
     ports:
-      - "51820:51820/udp"
       - "7070:7070"

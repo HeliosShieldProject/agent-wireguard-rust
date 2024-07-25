@@ -77,7 +77,9 @@ async fn main() {
         )
         .route_layer(middleware::from_fn(track_metrics));
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:7070").await.unwrap();
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:7070")
+        .await
+        .unwrap();
 
     info!(
         "Main server listening on {}",
