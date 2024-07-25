@@ -11,6 +11,7 @@ pub enum IOError {
     NotFoundError,
     PermissionDenied,
     ConnectionRefused,
+    StringConversionError,
 }
 
 impl IntoResponse for IOError {
@@ -19,6 +20,9 @@ impl IntoResponse for IOError {
             IOError::NotFoundError => (StatusCode::INTERNAL_SERVER_ERROR, "File not found"),
             IOError::PermissionDenied => (StatusCode::INTERNAL_SERVER_ERROR, "Permission denied"),
             IOError::ConnectionRefused => (StatusCode::INTERNAL_SERVER_ERROR, "Connection refused"),
+            IOError::StringConversionError => {
+                (StatusCode::INTERNAL_SERVER_ERROR, "String conversion error")
+            }
         };
 
         Response {

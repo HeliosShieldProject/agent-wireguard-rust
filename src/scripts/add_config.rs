@@ -16,8 +16,7 @@ pub fn add_config(ip: Ipv4Addr) -> Result<String, InternalError> {
         return Err(InternalError::InternalError);
     }
 
-    let private_key =
-        String::from_utf8(private_key_output.stdout).map_err(|e| InternalError::InternalError)?;
+    let private_key = String::from_utf8(private_key_output.stdout).map_err(to_internal)?;
 
     let public_key_output = Command::new("wg")
         .arg("pubkey")
@@ -38,8 +37,7 @@ pub fn add_config(ip: Ipv4Addr) -> Result<String, InternalError> {
         return Err(InternalError::InternalError);
     }
 
-    let public_key =
-        String::from_utf8(public_key_output.stdout).map_err(|e| InternalError::InternalError)?;
+    let public_key = String::from_utf8(public_key_output.stdout).map_err(to_internal)?;
 
     Command::new("wg")
         .arg("set")

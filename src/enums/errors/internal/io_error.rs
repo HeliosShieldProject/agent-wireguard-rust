@@ -5,6 +5,7 @@ pub enum IOError {
     NotFoundError,
     PermissionDenied,
     ConnectionRefused,
+    StringConversionError,
 }
 
 impl Error for std::io::Error {
@@ -22,6 +23,12 @@ impl Error for std::io::Error {
     }
 }
 
+impl Error for std::string::FromUtf8Error {
+    fn as_internal(&self) -> InternalError {
+        InternalError::IOError(IOError::StringConversionError)
+    }
+}
+
 impl external::Error for IOError {
     fn as_external(&self) -> external::ExternalError {
         match self {
@@ -34,6 +41,9 @@ impl external::Error for IOError {
             IOError::ConnectionRefused => {
                 external::ExternalError::IOError(external::IOError::ConnectionRefused)
             }
+            IOError::StringConversionError => {
+                external::ExternalError::IOError(external::IOError::StringConversionError)
+            }
         }
     }
 }
@@ -44,6 +54,7 @@ impl std::fmt::Display for IOError {
             IOError::NotFoundError => write!(f, "File not found"),
             IOError::PermissionDenied => write!(f, "Permission denied"),
             IOError::ConnectionRefused => write!(f, "Connection refused"),
+            IOError::StringConversionError => write!(f, "String conversion error"),
         }
     }
 }
