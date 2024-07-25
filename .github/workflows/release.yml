@@ -4,8 +4,20 @@ on:
       - production
 
 jobs:
+  formatting:
+    name: cargo fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rustfmt
+      - name: Rustfmt Check
+        uses: actions-rust-lang/rustfmt@v1
+
   release:
     name: release ${{ matrix.target }}
+    needs: formatting
     permissions: write-all
     runs-on: ubuntu-latest
     strategy:
@@ -16,6 +28,7 @@ jobs:
             archive: tar.gz tar.xz tar.zst
     steps:
       - uses: actions/checkout@master
+      
       - name: Compile and release
         uses: rust-build/rust-build.action@v1.4.5
         env:
@@ -23,3 +36,33 @@ jobs:
         with:
           RUSTTARGET: ${{ matrix.target }}
           ARCHIVE_TYPES: ${{ matrix.archive }}
+      
+      - name: Create new tag
+        id: tag
+        run: |
+          VERSION=$(git tag | sort -V | tail -n 1)
+          NEW_VERSION=$(echo $VERSION | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
+          git tag $NEW_VERSION
+          echo "::set-output name=tag::$NEW_VERSION"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          release_name: Release ${{ steps.tag.outputs.tag }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Artifact
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: target/${{ matrix.target }}/release/*.${{ matrix.archive }}
+          asset_name: ${{ github.repository }}-${{ matrix.target }}.${{ matrix.archive }}
+          asset_content_type: application/octet-stream
