@@ -1,5 +1,3 @@
-use std::io;
-
 pub mod io_error;
 pub use io_error::IOError;
 
