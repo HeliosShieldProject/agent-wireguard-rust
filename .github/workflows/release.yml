@@ -19,7 +19,7 @@ jobs:
         uses: rust-build/rust-build.action@v1.4.5
         with:
           RUSTTARGET: x86_64-unknown-linux-musl
-          ARCHIVE_TYPES: tar.gz tar.xz tar.zst
+          ARCHIVE_TYPES: tar.gz
           UPLOAD_MODE: none
       - name: Upload artifact
         uses: actions/upload-artifact@v3
