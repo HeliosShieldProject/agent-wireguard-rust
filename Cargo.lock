@@ -22,8 +22,10 @@ name = "agent-wireguard"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "dotenvy",
  "metrics",
  "metrics-exporter-prometheus",
+ "once_cell",
  "serde",
  "serde_json",
  "tokio",
@@ -263,6 +265,12 @@ name = "crossbeam-utils"
 version = "0.8.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "22ec99545bb0ed0ea7bb9b8e1e9122ea386ff8a48c0922e43f36d45ab09e0e80"
+
+[[package]]
+name = "dotenvy"
+version = "0.15.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1aaf95b3e5c8f23aa320147307562d361db0ae0d51242340f558153b4eb2439b"
 
 [[package]]
 name = "equivalent"

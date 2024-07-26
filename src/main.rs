@@ -17,6 +17,7 @@ mod enums;
 mod handlers;
 mod scripts;
 mod services;
+mod config;
 
 async fn handler_404() -> impl IntoResponse {
     (
@@ -77,7 +78,7 @@ async fn main() {
         )
         .route_layer(middleware::from_fn(track_metrics));
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:7070")
+    let listener = tokio::net::TcpListener::bind(format!("{:}:{:}", config::ENV.agent_host, config::ENV.agent_port))
         .await
         .unwrap();
 
