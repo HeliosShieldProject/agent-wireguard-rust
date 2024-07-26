@@ -12,12 +12,12 @@ use tower_http::trace::TraceLayer;
 use tracing::{info, info_span};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
+mod config;
 mod dto;
 mod enums;
 mod handlers;
 mod scripts;
 mod services;
-mod config;
 
 async fn handler_404() -> impl IntoResponse {
     (
@@ -78,9 +78,13 @@ async fn main() {
         )
         .route_layer(middleware::from_fn(track_metrics));
 
-    let listener = tokio::net::TcpListener::bind(format!("{:}:{:}", config::ENV.agent_host, config::ENV.agent_port))
-        .await
-        .unwrap();
+    let listener = tokio::net::TcpListener::bind(format!(
+        "{:}:{:}",
+        config::ENV.agent_host,
+        config::ENV.agent_port
+    ))
+    .await
+    .unwrap();
 
     info!(
         "Main server listening on {}",
