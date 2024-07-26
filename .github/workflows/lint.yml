@@ -1,3 +1,5 @@
+name: Lint
+
 on:
   push:
     branches:
@@ -14,20 +16,3 @@ jobs:
           components: rustfmt
       - name: Rustfmt Check
         uses: actions-rust-lang/rustfmt@v1
-
-  release:
-    name: Upload to GitHub Release
-    needs:
-      - lint
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Create GitHub Release
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: >-
-          gh release create
-          '${{ github.ref_name }}'
-          --repo '${{ github.repository }}'
-          --generate-notes
