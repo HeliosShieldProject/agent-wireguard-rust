@@ -4,6 +4,10 @@ on:
   push:
     tags:
       - "v*.*.*"
+      - "v*.*.*-hotfix.*"
+      - "v*.*.*-nightly"
+      - "v*.*.*-alpha"
+      - "v*.*.*-beta"
 
 jobs:
   build:
