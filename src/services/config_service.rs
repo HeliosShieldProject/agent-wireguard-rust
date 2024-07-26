@@ -1,15 +1,15 @@
-use crate::{enums::errors::internal::InternalError, scripts};
+use crate::{dto::configs::response::Config, enums::errors::internal::InternalError, scripts};
 use std::net::Ipv4Addr;
 use tracing::error;
 
-pub async fn add_config() -> Result<String, InternalError> {
+pub async fn add_config() -> Result<Config, InternalError> {
     let ip: Ipv4Addr = get_available_ip().await?;
     let private_key: String = scripts::add_config(ip).map_err(|e| {
         error!("Failed to add config: {}", e);
         e
     })?;
 
-    Ok(private_key.to_string())
+    Ok(Config::new(private_key, ip.to_string()))
 }
 
 pub async fn get_used_ips() -> Result<Vec<Ipv4Addr>, InternalError> {
