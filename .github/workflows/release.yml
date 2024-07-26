@@ -40,3 +40,25 @@ jobs:
           files: |
             ${{ steps.compile.outputs.BUILT_ARCHIVE }}
             ${{ steps.compile.outputs.BUILT_CHECKSUM }}
+    
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Add SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.HELIOS_SSH }}" > ~/.ssh/helios_ssh
+          chmod 600 ~/.ssh/helios_ssh
+      
+      - name: Deploy to Digital Ocean
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/helios_ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "kill $(pidof agent-wireguard)"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/helios_ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "rm -f download-binary.sh"
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/helios_ssh -P ${{ secrets.SSH_PORT }} scripts/download-binary.sh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/download-binary.sh
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/helios_ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "./agent-wireguard"
+
+
+
+          

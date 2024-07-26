@@ -23,7 +23,20 @@ cargo run
 ```
 > Yeah, that's it! The server will be running on `http://<AGENT_HOST>:<AGENT_PORT>`.
 
-## Remote Deployment
+## Remote Deployment (actions)
+
+### Prerequisites
+
+Setup github secrets following the table below:
+
+| Secret Name | Description |
+| --- | --- |
+| HELIOS_SSH | SSH private key for the remote server |
+| SSH_PORT | SSH port for the remote server |
+| SSH_USER | SSH user for the remote server |
+| SSH_HOST | IP address or hostname of the remote server |
+
+## Remote Deployment (manual)
 
 ### Prerequisites
 
@@ -32,3 +45,4 @@ cargo run
 3. Download the latest release from the [releases page](https://github.com/HeliosShieldProject/agent-wireguard-rust/releases).
 4. Specify .env file following the example [.env.example](.env.example).
 5. Unzip the release and run the binary `./agent-wireguard-rust`.
+
