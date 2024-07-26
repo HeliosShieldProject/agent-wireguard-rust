@@ -39,7 +39,7 @@ Setup github secrets following the table below:
 
 #### Initial Setup
 
-1. SSH into the remote server and create .env file following the example [.env.example](.env.example).
+1. SSH into the remote server and create .env file following the example [.env.example](.env.example) and add HELIOS_SSH public key.
 2. Run Server Setup script [scripts/server_setupr.sh](scripts/server_setup.sh).
 3. Run binary `./agent-wireguard`.
 

@@ -1,3 +1,5 @@
+OWNER="HeliosShieldProject"
+REPO="agent-wireguard-rust"
 SAVE_PATH="asset.tar.gz"
 rm -f "$SAVE_PATH" agent-wireguard
 ASSET_URL=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$OWNER/$REPO/releases/latest | grep '"browser_download_url"' | grep 'tar.gz' | head -n 1 | sed -E 's/.*"([^"]+)".*/\1/')
