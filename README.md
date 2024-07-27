@@ -1,4 +1,4 @@
-# Helios Agent Wireguard Server
+# Helios | Agent Wireguard Server
 
 This project is an API server for managing WireGuard configurations, utilizing the Axum framework and interfacing directly with the WireGuard CLI. It provides a simple and efficient way to programmatically manipulate WireGuard settings, keys, and configurations. Whether you're automating VPN setup or managing multiple WireGuard instances, this server offers a powerful and flexible solution.
 
