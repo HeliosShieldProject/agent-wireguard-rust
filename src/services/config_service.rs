@@ -32,7 +32,7 @@ pub async fn get_used_ips() -> Result<Vec<Ipv4Addr>, InternalError> {
 
 pub async fn get_available_ip() -> Result<Ipv4Addr, InternalError> {
     let used_ips = get_used_ips().await?;
-    let mut ip = Ipv4Addr::new(10, 0, 0, 1);
+    let mut ip = Ipv4Addr::new(10, 0, 0, 2);
 
     while used_ips.contains(&ip) {
         let octets = ip.octets();
