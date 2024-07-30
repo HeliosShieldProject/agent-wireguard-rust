@@ -4,7 +4,7 @@ wg genkey | tee /etc/wireguard/privatekey | wg pubkey | tee /etc/wireguard/publi
 chmod 600 /etc/wireguard/privatekey
 echo "[Interface]
 PrivateKey = $(cat /etc/wireguard/privatekey)
-Address = $WIREGUARD_ADDRESS
+Address = $WIREGUARD_ADDRESS/24
 ListenPort = $WIREGUARD_PORT
 PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
